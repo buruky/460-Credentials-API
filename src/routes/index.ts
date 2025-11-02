@@ -1,14 +1,19 @@
-import { Router } from 'express';
-import { openRoutes } from './open';
-import { closedRoutes } from './closed';
+// src/routes/index.ts
+import { Router } from "express";
+import { openRoutes } from "./open";
+import { closedRoutes } from "./closed";
+import adminRoutes from "./admin"; // ✅ import your admin router
+import { checkToken } from '@middleware'; // ✅ verify path matches your structure
 
-const routes = Router();
+const routes: Router = Router();
 
-// Mount all route groups
-routes.use('', openRoutes);
+// Mount open (public) routes
+routes.use("", openRoutes);
 
-routes.use('', closedRoutes);
+// Mount closed (JWT-protected) routes
+routes.use("", closedRoutes);
 
-// Admin routes have been removed - students will implement these
+// ✅ Mount admin routes (JWT + admin role required)
+routes.use("/admin", checkToken, adminRoutes);
 
 export { routes };
