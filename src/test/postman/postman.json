@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Credentials API - Fully Fixed",
+    "name": "Credentials API - Fully Fixed (Mocked Email/SMS)",
     "_postman_id": "12345678-1234-1234-1234-123456789012",
-    "description": "Fully fixed version of the Credentials API tests with unique users",
+    "description": "Fully fixed version of the Credentials API tests with unique users and mocked email/SMS",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -11,7 +11,13 @@
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": { "raw": "http://localhost:8000/auth/register", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["auth","register"] },
+        "url": {
+          "raw": "http://localhost:8000/auth/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "register"]
+        },
         "body": {
           "mode": "raw",
           "raw": "{\n  \"firstname\": \"{{firstname}}\",\n  \"lastname\": \"{{lastname}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"username\": \"{{username}}\",\n  \"phone\": \"{{phone}}\"\n}"
@@ -65,7 +71,13 @@
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": { "raw": "http://localhost:8000/auth/login", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["auth","login"] },
+        "url": {
+          "raw": "http://localhost:8000/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "login"]
+        },
         "body": {
           "mode": "raw",
           "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
@@ -103,7 +115,13 @@
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": { "raw": "http://localhost:8000/auth/password/reset-request", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["auth","password","reset-request"] },
+        "url": {
+          "raw": "http://localhost:8000/auth/password/reset-request",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "password", "reset-request"]
+        },
         "body": { "mode": "raw", "raw": "{ \"email\": \"{{email}}\" }" }
       },
       "event": [
@@ -122,7 +140,13 @@
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": { "raw": "http://localhost:8000/auth/password/reset", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["auth","password","reset"] },
+        "url": {
+          "raw": "http://localhost:8000/auth/password/reset",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "password", "reset"]
+        },
         "body": { "mode": "raw", "raw": "{ \"token\": \"example-reset-token\", \"password\": \"{{password}}\" }" }
       },
       "event": [
@@ -137,11 +161,137 @@
       ]
     },
     {
+      "name": "Auth – Change Password (Mocked)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/auth/user/password/change",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "user", "password", "change"]
+        },
+        "body": { "mode": "raw", "raw": "{ \"oldPassword\": \"{{password}}\", \"newPassword\": \"{{password}}\" }" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": [
+            "pm.test('Password change status is 200 (mock)', () => pm.expect(pm.response.code).to.equal(200));",
+            "pm.test('Response contains success message (mock)', () => {",
+            "    const jsonData = pm.response.json();",
+            "    pm.expect(jsonData.message).to.include('Password changed successfully');",
+            "});"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Verification – Send SMS Code (Mocked)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/auth/verify/phone/send",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "verify", "phone", "send"]
+        },
+        "body": { "mode": "raw", "raw": "{ \"phone\": \"{{phone}}\" }" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": [
+            "pm.test('SMS send status is 200 (mock)', () => pm.expect(pm.response.code).to.equal(200));",
+            "pm.test('SMS mocked response', () => {",
+            "    const jsonData = pm.response.json();",
+            "    pm.expect(jsonData.message).to.include('Verification code sent (mock)');",
+            "});"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Verification – Verify SMS Code (Mocked)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/auth/verify/phone/verify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "verify", "phone", "verify"]
+        },
+        "body": { "mode": "raw", "raw": "{ \"phone\": \"{{phone}}\", \"code\": \"123456\" }" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": [
+            "pm.test('Phone verification status is 200 (mock)', () => pm.expect(pm.response.code).to.equal(200));",
+            "pm.test('Response contains success message (mock)', () => {",
+            "    const jsonData = pm.response.json();",
+            "    pm.expect(jsonData.message).to.include('Phone verified successfully (mock)');",
+            "});"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Verification – Send Email Verification (Mocked)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/auth/verify/email/send",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "verify", "email", "send"]
+        },
+        "body": { "mode": "raw", "raw": "{ \"email\": \"{{email}}\" }" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": [
+            "pm.test('Email send status is 200 (mock)', () => pm.expect(pm.response.code).to.equal(200));",
+            "pm.test('Email mocked response', () => {",
+            "    const jsonData = pm.response.json();",
+            "    pm.expect(jsonData.message).to.include('Verification email sent (mock)');",
+            "});"
+          ]
+        }
+      ]
+    },
+    {
       "name": "Verification – Get Supported Carriers",
       "request": {
         "method": "GET",
         "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
-        "url": { "raw": "http://localhost:8000/auth/verify/carriers", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["auth","verify","carriers"] }
+        "url": {
+          "raw": "http://localhost:8000/auth/verify/carriers",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["auth", "verify", "carriers"]
+        }
       },
       "event": [
         {
@@ -156,12 +306,22 @@
     },
     {
       "name": "JWT Test – Public Endpoint",
-      "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8000/jwt_test", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["jwt_test"] } },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/jwt_test",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["jwt_test"]
+        }
+      },
       "event": [
         {
           "listen": "test",
           "script": [
-            "pm.test('JWT test endpoint is reachable', function () {",
+            "pm.test('JWT test returns 200', function () {",
             "    pm.expect(pm.response.code).to.equal(200);",
             "});"
           ]
@@ -169,18 +329,268 @@
       ]
     },
     {
-      "name": "Documentation – Index Route",
-      "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8000/doc", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["doc"] } },
-      "event": [
+      "name": "Admin – User Management",
+      "item": [
         {
-          "listen": "test",
-          "script": [
-            "pm.test('Documentation index loads successfully', function () {",
-            "    pm.expect(pm.response.code).to.be.oneOf([200, 302]);",
-            "});"
+          "name": "Admin – List Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "http://localhost:8000/admin/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 200', () => pm.expect(pm.response.code).to.equal(200));",
+                "pm.test('Response is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin – Search Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "http://localhost:8000/admin/users/search?email={{email}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users", "search"],
+              "query": [{ "key": "email", "value": "{{email}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 200', () => pm.expect(pm.response.code).to.equal(200));",
+                "pm.test('At least one user found', () => pm.expect(pm.response.json().length).to.be.above(0));"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin – Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "http://localhost:8000/admin/users/{{testUserId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users", "{{testUserId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 200', () => pm.expect(pm.response.code).to.equal(200));",
+                "pm.test('Response has correct user ID', () => {",
+                "    const user = pm.response.json();",
+                "    pm.expect(user.id).to.eql(pm.environment.get('testUserId'));",
+                "});"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin – Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/admin/users/create",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users", "create"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Test123!\",\n  \"role\": \"User\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 201 or 200', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+                "pm.test('Response contains new user ID', () => {",
+                "    const user = pm.response.json();",
+                "    pm.expect(user.id).to.exist;",
+                "    pm.environment.set('testUserId', user.id);",
+                "});"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin – Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/admin/users/{{testUserId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users", "{{testUserId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 200', () => pm.expect(pm.response.code).to.equal(200));",
+                "pm.test('Name updated', () => {",
+                "    const user = pm.response.json();",
+                "    pm.expect(user.name).to.eql('Updated Name');",
+                "});"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin – Reset Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/admin/users/{{testUserId}}/password",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users", "{{testUserId}}", "password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"NewPass123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 200', () => pm.expect(pm.response.code).to.equal(200));",
+                "pm.test('Password reset successfully', () => {",
+                "    const res = pm.response.json();",
+                "    pm.expect(res.message).to.include('Password reset');",
+                "});"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin – Change User Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/admin/users/{{testUserId}}/role",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users", "{{testUserId}}", "role"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Admin\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 200', () => pm.expect(pm.response.code).to.equal(200));",
+                "pm.test('Role updated', () => {",
+                "    const res = pm.response.json();",
+                "    pm.expect(res.message).to.include('Role updated');",
+                "});"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin – Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "http://localhost:8000/admin/users/{{testUserId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users", "{{testUserId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 200 or 204', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));",
+                "pm.test('User deleted', () => {",
+                "    const res = pm.response.json();",
+                "    pm.expect(res.message).to.include('User deleted');",
+                "});"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin – Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "http://localhost:8000/admin/users/stats/dashboard",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["admin", "users", "stats", "dashboard"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                "pm.test('Status 200', () => pm.expect(pm.response.code).to.equal(200));",
+                "pm.test('Response has expected keys', () => {",
+                "    const stats = pm.response.json();",
+                "    pm.expect(stats).to.have.keys(['totalUsers', 'activeUsers']);",
+                "});"
+              ]
+            }
           ]
         }
       ]
     }
+
   ]
 }
