@@ -37,8 +37,8 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: https://dataset-web-api.onrender.com
-    description: Production (Render)
+  - url: https://credential-api-giuj.onrender.com
+    description: Same origin
   - url: http://localhost:8000
     description: Local development
 
