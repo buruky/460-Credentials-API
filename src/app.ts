@@ -29,13 +29,15 @@ export const createApp = (): Express => {
     // }));
     app.use(express.json());
 
-    // Serve static files from public directory
-    app.use(express.static(path.join(__dirname, '../public')));
-
-    // Root endpoint (must be before routes to avoid being caught by auth middleware)
-    // Serves index.html from public directory
+    // Root endpoint - API information
     app.get('/', (request: Request, response: Response) => {
-        response.sendFile(path.join(__dirname, '../public/index.html'));
+        response.json({
+            message: 'TCSS-460 Auth Squared API',
+            version: '1.0.0',
+            documentation: '/api-docs',
+            educationalDocs: '/doc',
+            jwtTest: '/jwt_test'
+        });
     });
 
     // Load and setup Swagger documentation (must be before routes)
